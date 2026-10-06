@@ -1,0 +1,47 @@
+{
+  "widgetId": "lio_clock_widget",
+  "name": "Lio Clock & Timer HUD",
+  "description": "Minimalist monochrome Android clock and focus timer widget",
+  "size": "4x2",
+  "minWidth": 260,
+  "minHeight": 110,
+  "updatePeriodMillis": 60000,
+  "layout": {
+    "type": "card",
+    "theme": "light",
+    "titleKey": "clock_display",
+    "statusKey": "timer_status",
+    "subtitleKey": "date_display",
+    "stats": [
+      {
+        "label": "Timer Remaining",
+        "key": "timer_progress",
+        "bar": true,
+        "color": "#18181b"
+      },
+      {
+        "label": "Focus Mode",
+        "key": "focus_mode"
+      }
+    ],
+    "actions": [
+      {
+        "action": "ACTION_TOGGLE_TIMER",
+        "label": "Start 25m",
+        "deepLink": "larps://timer/toggle"
+      },
+      {
+        "action": "ACTION_RESET_TIMER",
+        "label": "Reset",
+        "deepLink": "larps://timer/reset"
+      }
+    ]
+  },
+  "initialData": {
+    "clock_display": "12:45:00",
+    "timer_status": "TIMER IDLE • 25:00",
+    "date_display": "Monday, Oct 5",
+    "timer_progress": 100,
+    "focus_mode": "Deep Focus Session"
+  }
+}

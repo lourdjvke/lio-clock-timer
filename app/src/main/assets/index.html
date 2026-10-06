@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#FFFFFF" id="themeColorMeta">
+  <title>Lio</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="larps-bridge.js"></script>
+</head>
+<body class="theme-white">
+  <!-- Native App Splash Screen Overlay (Shows instantly, then fades out smoothly after 1.8s) -->
+  <div id="splashScreen" class="splash-screen">
+    <div class="splash-content">
+      <svg class="splash-logo" viewBox="0 0 24 24" width="64" height="64" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="10"></circle>
+        <polyline points="12 6 12 12 16 14"></polyline>
+      </svg>
+      <h1 class="splash-title">Lio</h1>
+      <p class="splash-subtitle">MINIMALIST CLOCK & FOCUS TIMER</p>
+    </div>
+  </div>
+
+  <div id="app" class="screen">
+    <!-- Top Mobile App Bar (Adheres to white theme, draws under status bar) -->
+    <header class="top-bar">
+      <div class="logo-group">
+        <!-- Clock Logo (Minimalist Black & White) -->
+        <svg class="clock-logo" viewBox="0 0 24 24" width="22" height="22" stroke="currentColor" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"></circle>
+          <polyline points="12 6 12 12 16 14"></polyline>
+        </svg>
+        <span class="brand-title">Lio</span>
+      </div>
+      <div class="header-right">
+        <span id="dateDisplay" class="date-badge">MON, OCT 5</span>
+        <button id="btnFullscreen" class="icon-pill" title="Toggle Edge-to-Edge Fullscreen">⛶</button>
+      </div>
+    </header>
+
+    <!-- Main Clock & Timer Stage (Centered) -->
+    <main class="clock-stage">
+      <div class="clock-container">
+        <div class="clock-digits" id="clockDigits">
+          <span id="hourMin" class="main-time">12:45</span>
+          <span id="secDigit" class="sec-time">:00</span>
+        </div>
+        <div id="ampmDisplay" class="ampm-text">PM • LOCAL TIME</div>
+      </div>
+
+      <!-- Focus Timer Module -->
+      <div class="timer-card">
+        <div class="timer-header">
+          <span class="timer-label">FOCUS TIMER</span>
+          <span id="timerCountdown" class="timer-val">25:00</span>
+        </div>
+        <div class="progress-track">
+          <div id="timerProgress" class="progress-fill" style="width: 100%"></div>
+        </div>
+      </div>
+
+      <!-- Minimalist Flat Pill Buttons -->
+      <div class="pill-actions">
+        <!-- 1. Start / Pause Timer -->
+        <button id="btnToggleTimer" class="pill-btn pill-primary">
+          <span id="timerBtnIcon">▶</span>
+          <span id="timerBtnText">Start Focus Timer</span>
+        </button>
+
+        <!-- 2. Explicit Android Device Permission Request -->
+        <button id="btnRequestPermission" class="pill-btn pill-secondary">
+          <span>🛡️</span>
+          <span>Request Device Permissions</span>
+        </button>
+
+        <!-- 3. Highly Custom Device Audio & Vibration Notification -->
+        <button id="btnCustomNotification" class="pill-btn pill-secondary">
+          <span>🔔</span>
+          <span>Device Audio & Haptic Notification</span>
+        </button>
+
+        <!-- 4. Launch Floating Widget & Update Android RemoteViews -->
+        <button id="btnSyncWidget" class="pill-btn pill-outline">
+          <span>🧩</span>
+          <span>Update Android Widget</span>
+        </button>
+
+        <!-- 5. Biometric Fingerprint / Face Unlock -->
+        <button id="btnBiometricAuth" class="pill-btn pill-outline">
+          <span>👆</span>
+          <span>Biometric Secure Lock</span>
+        </button>
+      </div>
+
+      <!-- Feedback Toast Banner -->
+      <div id="statusBanner" class="status-banner" style="display: none;">
+        <span id="statusText">Ready</span>
+      </div>
+
+      <!-- Secure Settings Card (Revealed upon Biometric Unlock) -->
+      <div id="secureSettingsCard" class="secure-card" style="display: none;">
+        <div class="secure-header">
+          <span class="secure-badge">🔓 UNLOCKED VIA BIOMETRICS</span>
+        </div>
+        <p class="secure-desc">Hardware biometrics confirmed. Focus settings unlocked for this session.</p>
+      </div>
+    </main>
+
+    <!-- Bottom Glassmorphic Theme Dock (Flat design with color circles) -->
+    <footer class="theme-dock">
+      <div class="dock-content">
+        <span class="dock-label">THEME</span>
+        <div class="color-palette">
+          <button class="color-circle bg-pure-white active" data-theme="white" title="Pure White Monochrome"></button>
+          <button class="color-circle bg-ocean" data-theme="ocean" title="Ocean Frost"></button>
+          <button class="color-circle bg-sage" data-theme="sage" title="Sage Minimal"></button>
+          <button class="color-circle bg-sunset" data-theme="sunset" title="Sunset Pearl"></button>
+          <button class="color-circle bg-midnight" data-theme="midnight" title="Midnight OLED"></button>
+        </div>
+      </div>
+    </footer>
+  </div>
+
+  <!-- Android Native Floating Widget Definition (DOM Element for showFloating) -->
+  <floating id="lio_floating_widget" style="display: none;">
+    <div style="background: #FFFFFF; color: #111827; padding: 14px; border-radius: 20px; border: 1px solid rgba(0,0,0,0.1); box-shadow: 0 8px 30px rgba(0,0,0,0.15); font-family: sans-serif;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+        <span style="font-size: 10px; font-weight: 800; color: #71717A; letter-spacing: 1px;">LIO LIVE WIDGET</span>
+        <button onclick="if(window.android?.closeFloating) window.android.closeFloating('lio_floating_widget');" style="background:none; border:none; font-size:14px; cursor:pointer; color:#71717A;">✕</button>
+      </div>
+      <div class="widget-clock-text" style="font-size: 28px; font-weight: 800; letter-spacing: -1px; color:#09090B;">12:45</div>
+      <div class="widget-sub-text" style="font-size: 11px; font-weight: 700; color: #71717A; margin-top: 2px;">TIMER IDLE • 25:00</div>
+      <div style="width: 100%; height: 5px; background: rgba(0,0,0,0.06); border-radius: 999px; margin-top: 8px; overflow: hidden;">
+        <div class="widget-prog-bar" style="height: 100%; background: #09090B; width: 100%;"></div>
+      </div>
+      <div style="display: flex; gap: 6px; margin-top: 10px;">
+        <button onclick="if(window.android?.vibrate) window.android.vibrate([0,60]);" style="flex: 1; padding: 6px 10px; font-size: 11px; font-weight: 700; border-radius: 999px; border: none; background: #09090B; color: #FFF; cursor: pointer;">Toggle</button>
+        <button onclick="if(window.android?.activate) window.android.activate();" style="flex: 1; padding: 6px 10px; font-size: 11px; font-weight: 700; border-radius: 999px; border: 1px solid rgba(0,0,0,0.1); background: #F4F4F5; color: #09090B; cursor: pointer;">Open App</button>
+      </div>
+    </div>
+  </floating>
+
+  <script src="app.js"></script>
+</body>
+</html>
